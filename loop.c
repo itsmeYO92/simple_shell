@@ -9,14 +9,22 @@ void shell_loop(void)
 {
 	char *line;
 	char **args;
-	char **env = {NULL};
+	char **env = NULL;
 	int status;
 
 	while (1)
 	{
 		write(STDOUT_FILENO, "$ ", 2);
 		line = shell_read_line();
+		if (!line)
+			continue;
 		args = shell_split_line(line);
+		args[0] = get_command(args[0]);
+		if (!args[0])
+		{
+			perror("not found");
+			continue;
+		}
 		status = shell_execute(args, env);
 
 		free(line);
@@ -37,7 +45,7 @@ char *shell_read_line(void)
 	if (getline(&buffer, &len, stdin) == -1)
 	{
 		if (feof(stdin))
-			exit(EXIT_SUCCESS);
+			return (NULL);
 
 		perror("Error reading line");
 		exit(EXIT_FAILURE);
