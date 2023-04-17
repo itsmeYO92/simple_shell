@@ -8,10 +8,6 @@
 
 int main(void)
 {
-	// init the program
-
-	// infinite loop
-	_loop();
-	// exiting
+	shell_loop();
 
 }

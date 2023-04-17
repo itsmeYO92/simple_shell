@@ -11,15 +11,15 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+#include <errno.h>
 
 
 /*
  * FUNCTIONS
 */
 
-void _loop(void);
-char *get_line(void);
-char **get_args(char *line);
-
+void shell_loop(void);
+char *shell_read_line(void);
+char **shell_split_line(char *line);
+int shell_execute(char **args, char **env);
 #endif
