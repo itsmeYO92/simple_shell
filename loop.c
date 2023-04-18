@@ -50,6 +50,9 @@ char *shell_read_line(void)
 		perror("Error reading line");
 		exit(EXIT_FAILURE);
 	}
+	printf("buffer: %d\n",strlen(buffer));
+	if (*buffer == '\n')
+		return (NULL);
 	return (buffer);
 }
 
