@@ -102,6 +102,18 @@ int shell_execute(char **args, char **env)
 {
 	pid_t pid;
 	int status;
+	int (*builtin_func)(char **) = NULL;
+
+	if (args[0] == NULL)
+	{
+		/* empty command */
+		return (1);
+	}
+
+	builtin_func = get_cmd(args[0]);
+	if (builtin_func != NULL) {
+		/* execute built-in command*/
+		return builtin_func(args);
 
 	pid = fork();
 	if (pid == -1)
@@ -122,13 +134,38 @@ int shell_execute(char **args, char **env)
 	}
 	else
 	{
-		do {
+		wait(NULL);
+	/*	do {
 			if (waitpid(pid, &status, WUNTRACED) == -1)
 				perror("Failed to exit");
 			if (WIFSTOPPED(status))
 				printf("Process %d stopped, waiting for signal\n", pid);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-	}
+	*/}
 	return (1);
+}
+
+/**
+ * get_cmd - Get the function pointer for a built-in command
+ * @cmd_name: The name of the command to find
+ *
+ * Return: The function pointer if found, NULL otherwise
+ */
+built_in_func get_cmd(char *cmd_name)
+{
+    int i;
+    built_in_cmd built_in_cmds[] = {
+        {"cd", cd_shell},
+        /* add other built-in commands here */
+        {NULL, NULL}
+    };
+    for (i = 0; built_in_cmds[i].cmd_name != NULL; i++)
+    {
+        if (strcmp(cmd_name, built_in_cmds[i].cmd_name) == 0)
+        {
+            return built_in_cmds[i].cmd_func;
+        }
+    }
+    return NULL;
 }
 
