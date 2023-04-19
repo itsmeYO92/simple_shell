@@ -8,6 +8,7 @@ char **parse_input(char *input);
 void change_directory(char **args);
 void run_shell(void);
 void exit_shell(void);
+
 /**
  * print_prompt - prints the shell prompt, which is the current working directory
  */
@@ -29,6 +30,11 @@ char *read_input(void)
     size_t size = 0;
 
     if (getline(&input, &size, stdin) == -1) {
+	if (feof(stdin))
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		return ("EOF");
+	}
         perror("getline");
         exit(EXIT_FAILURE);
     }
@@ -158,6 +164,8 @@ void run_shell(void)
     do {
         print_prompt();
         input = read_input();
+	if (strcmp(input, "EOF") == 0)
+		return;
         args = parse_input(input);
 
         if (args[0] != NULL) {
@@ -165,6 +173,8 @@ void run_shell(void)
                 change_directory(args);
             } else if (strcmp(args[0], "exit") == 0) {
                 exit_shell();
+            } else if (strcmp(args[0], "env") == 0) {
+                print_env();
             } else {
                 execute_command(args);
             }
