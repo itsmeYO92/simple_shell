@@ -7,7 +7,47 @@ void execute_command(char **args);
 char **parse_input(char *input);
 void change_directory(char **args);
 void run_shell(void);
-void exit_shell(void);
+int exit_shell(char **args);
+int set_env(char **args);
+int unset_env(char **args);
+
+
+/**
+ *
+*/
+int set_env(char **args)
+{
+	if (!args[2] || args[3])
+	{
+		printf("Usage:\n\tsetenv VARIABLE VALUE\n");
+		return (1);
+	}
+	if (setenv(args[1], args[2], 1) == -1)
+	{
+		perror(args[0]);
+		return (1);
+	}
+	return (0);
+}
+
+
+/**
+ *
+*/
+int unset_env(char **args)
+{
+	if (!args[1] || args[2])
+	{
+		printf("Usage:\n\tunsetenv VARIABLE\n");
+		return (1);
+	}
+	if (unsetenv(args[1]) == -1)
+	{
+		perror(args[0]);
+		return (1);
+	}
+	return (0);
+}
 /**
  * print_prompt - prints the shell prompt, which is the current working directory
  */
@@ -150,9 +190,29 @@ void change_directory(char **args)
 	}
 }
 
-void exit_shell(void)
+int exit_shell(char **args)
 {
-	exit(0);
+	int EXIT_CODE;
+	char *checker;
+
+	if (args[2])
+	{
+		printf("bash: exit: too many arguments\n");
+		exit(2);
+	}
+	if (!args[1])
+		exit (0);
+	EXIT_CODE = strtol(args[1], &checker, 10);
+	if (EXIT_CODE < 0)
+		EXIT_CODE += 256;
+	if (*checker != '\0')
+	{
+		printf("bash: exit: %s: numeric argument required\n", args[1]);
+		exit(2);
+	}
+
+	exit(EXIT_CODE % 256);
+
 }
 
 void run_shell(void)
@@ -163,13 +223,21 @@ void run_shell(void)
     do {
         print_prompt();
         input = read_input();
+	if (strcmp(input, "EOF") == 0)
+		return;
         args = parse_input(input);
 
         if (args[0] != NULL) {
             if (strcmp(args[0], "cd") == 0) {
                 change_directory(args);
             } else if (strcmp(args[0], "exit") == 0) {
-                exit_shell();
+                exit_shell(args);
+            } else if (strcmp(args[0], "env") == 0) {
+                print_env();
+            } else if (strcmp(args[0], "setenv") == 0) {
+                set_env(args);
+            } else if (strcmp(args[0], "unsetenv") == 0) {
+                unset_env(args);
             } else {
                 execute_command(args);
             }
