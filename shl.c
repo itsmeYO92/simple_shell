@@ -1,5 +1,13 @@
 #include "shell.h"
-
+#define MAX_INPUT_LENGTH 1024
+#define MAX_ARGS 64
+void print_prompt(void);
+char *read_input(void);
+void execute_command(char **args);
+char **parse_input(char *input);
+void change_directory(char **args);
+void run_shell(void);
+void exit_shell(void);
 /**
  * print_prompt - prints the shell prompt, which is the current working directory
  */
@@ -166,5 +174,10 @@ void run_shell(void)
         free(args);
     } while (1);
 }
+int main()
+{
+	run_shell();
+	return 0;
 
+}
 
