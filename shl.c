@@ -200,6 +200,8 @@ int exit_shell(char **args)
 		printf("bash: exit: too many arguments\n");
 		exit(2);
 	}
+	if (!args[1])
+		exit (0);
 	EXIT_CODE = strtol(args[1], &checker, 10);
 	if (EXIT_CODE < 0)
 		EXIT_CODE += 256;
@@ -208,10 +210,9 @@ int exit_shell(char **args)
 		printf("bash: exit: %s: numeric argument required\n", args[1]);
 		exit(2);
 	}
-	if (EXIT_CODE != 0)
-		exit(EXIT_CODE % 256);	
 
-	exit(0);
+	exit(EXIT_CODE % 256);	
+
 }
 
 void run_shell(void)
