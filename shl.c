@@ -9,6 +9,7 @@ void change_directory(char **args);
 void run_shell(void);
 void exit_shell(void);
 int set_env(char **args);
+int unset_env(char **args);
 
 
 /**
@@ -30,6 +31,23 @@ int set_env(char **args)
 }
 
 
+/**
+ *
+*/
+int unset_env(char **args)
+{
+	if (!args[1] || args[2])
+	{
+		printf("Usage:\n\tunsetenv VARIABLE\n");
+		return (1);
+	}
+	if (unsetenv(args[1]) == -1)
+	{
+		perror(args[0]);
+		return (1);
+	}
+	return (0);
+}
 /**
  * print_prompt - prints the shell prompt, which is the current working directory
  */
@@ -198,6 +216,8 @@ void run_shell(void)
                 print_env();
             } else if (strcmp(args[0], "setenv") == 0) {
                 set_env(args);
+            } else if (strcmp(args[0], "unsetenv") == 0) {
+                unset_env(args);
             } else {
                 execute_command(args);
             }
