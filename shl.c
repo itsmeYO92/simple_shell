@@ -126,19 +126,13 @@ void execute_command(char **args)
     } else if (pid == 0) {
         // Child process
 
-        if (args[0][0] == '/') {
-            // Absolute path
 
-            if (access(args[0], X_OK) == 0) {
-                if (execve(args[0], args, NULL) == -1) {
+       if (access(args[0], X_OK) == 0) 
+           if (execve(args[0], args, NULL) == -1) 
+		{
                     perror("execve");
                     exit(EXIT_FAILURE);
-                }
-            } else {
-                fprintf(stderr, "%s: command not found\n", args[0]);
-                exit(EXIT_FAILURE);
-            }
-        } else {
+		}
             // Relative or command in PATH
 
             char *path = getenv("PATH");
@@ -160,7 +154,7 @@ void execute_command(char **args)
 
             fprintf(stderr, "%s: command not found\n", args[0]);
             exit(EXIT_FAILURE);
-        }
+        
     } else {
         // Parent process
 
