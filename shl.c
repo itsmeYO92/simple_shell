@@ -91,13 +91,14 @@ char *read_input(void)
 char **parse_input(char *input)
 {
     char **args = malloc(MAX_ARGS * sizeof(char *));
+ 
     if (args == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-
-    char *token = strtok(input, " \n");
-    int i = 0;
+	input = comment(input); /*chekc if its a comment. */
+    	char *token = strtok(input, " \n");
+    	int i = 0;
 
     while (token != NULL) {
         args[i++] = token;

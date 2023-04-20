@@ -41,4 +41,5 @@ int cd_shell(char* path);
 char *get_command(char *args);
 void (*get(char *command))(void);
 int print_env(void);
+char *comment(char *input);
 #endif
