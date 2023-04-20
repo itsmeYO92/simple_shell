@@ -54,7 +54,7 @@ int unset_env(char **args)
 void print_prompt(void)
 {
     char *cwd = getcwd(NULL, 0);
-    printf("%s> ", cwd);
+    printf("%s$ ", cwd);
     free(cwd);
 }
 
@@ -69,14 +69,14 @@ char *read_input(void)
     size_t size = 0;
 
     if (getline(&input, &size, stdin) == -1) {
-	if (feof(stdin))
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		return ("EOF");
-	}
-        perror("getline");
-        exit(EXIT_FAILURE);
+	    if (feof(stdin)) {
+      exit(EXIT_SUCCESS);  // We recieved an EOF
+    } else  {
+      perror("readline");
+      exit(EXIT_FAILURE);
     }
+
+	}
 
     return input;
 }
@@ -205,7 +205,7 @@ int exit_shell(char **args)
 		exit(2);
 	}
 
-	exit(EXIT_CODE % 256);	
+	exit(EXIT_CODE % 256);
 
 }
 
