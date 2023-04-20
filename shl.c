@@ -1,20 +1,30 @@
 #include "shell.h"
-#define MAX_INPUT_LENGTH 1024
-#define MAX_ARGS 64
-void print_prompt(void);
-char *read_input(void);
-void execute_command(char **args);
-char **parse_input(char *input);
-void change_directory(char **args);
-void run_shell(void);
-int exit_shell(char **args);
-int set_env(char **args);
-int unset_env(char **args);
-void clear_terminal(void);
+
 
 /**
- *
+ * print_env - set a variable in the environ
+ * Return: 0 if successful
 */
+
+int print_env(void)
+{
+	char **env = environ;
+
+	while (*env)
+	{
+		write(STDOUT_FILENO, *env, strlen(*env));
+		write(STDOUT_FILENO, "\n", 1);
+		env++;
+	}
+
+	return (0);
+}
+/**
+ * set_env - set a variable in the environ
+ * @args: parsed user input
+ * Return: 0 if successful
+*/
+
 int set_env(char **args)
 {
 	if (!args[2] || args[3])
@@ -32,7 +42,9 @@ int set_env(char **args)
 
 
 /**
- *
+ * unset_env - unset a variable in environ
+ * @args: parsed user input
+ * Return: 0 if successful
 */
 int unset_env(char **args)
 {
@@ -49,13 +61,15 @@ int unset_env(char **args)
 	return (0);
 }
 /**
- * print_prompt - prints the shell prompt, which is the current working directory
+ * print_prompt - prints the shell prompt,
+ *		 which is the current working directory
  */
 void print_prompt(void)
 {
-    char *cwd = getcwd(NULL, 0);
-    printf("%s$ ", cwd);
-    free(cwd);
+	char *cwd = getcwd(NULL, 0);
+
+	printf("%s$ ", cwd);
+	free(cwd);
 }
 
 /**
@@ -65,20 +79,24 @@ void print_prompt(void)
  */
 char *read_input(void)
 {
-    char *input = NULL;
-    size_t size = 0;
+	char *input = NULL;
+	size_t size = 0;
 
-    if (getline(&input, &size, stdin) == -1) {
-	    if (feof(stdin)) {
-      exit(EXIT_SUCCESS);  // We recieved an EOF
-    } else  {
-      perror("readline");
-      exit(EXIT_FAILURE);
-    }
+	if (getline(&input, &size, stdin) == -1)
+	{
+		if (feof(stdin))
+		{
+			exit(EXIT_SUCCESS);  // We recieved an EOF
+		}
+		else
+		{
+			perror("readline");
+			exit(EXIT_FAILURE);
+		}
 
 	}
 
-    return input;
+	return (input);
 }
 
 /**
@@ -90,23 +108,25 @@ char *read_input(void)
  */
 char **parse_input(char *input)
 {
-    char **args = malloc(MAX_ARGS * sizeof(char *));
- 
-    if (args == NULL) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
+	char **args = malloc(MAX_ARGS * sizeof(char *));
+
+	if (args == NULL)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
 	input = comment(input); /*chekc if its a comment. */
-    	char *token = strtok(input, " \n");
-    	int i = 0;
+		char *token = strtok(input, " \n");
+		int i = 0;
 
-    while (token != NULL) {
-        args[i++] = token;
-        token = strtok(NULL, " \n");
-    }
+	while (token != NULL)
+	{
+		args[i++] = token;
+		token = strtok(NULL, " \n");
+	}
 
-    args[i] = NULL;
-    return args;
+	args[i] = NULL;
+	return (args);
 }
 
 /**
@@ -116,53 +136,59 @@ char **parse_input(char *input)
  */
 void execute_command(char **args)
 {
-    pid_t pid;
-    int status;
+	pid_t pid;
+	int status;
 
-    pid = fork();
+	pid = fork();
 
-    if (pid == -1) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    } else if (pid == 0) {
-        // Child process
-
-
-       if (access(args[0], X_OK) == 0) 
-           if (execve(args[0], args, NULL) == -1) 
+	if (pid == -1)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+	{
+		// Child process
+		if (access(args[0], X_OK) == 0)
 		{
-                    perror("execve");
-                    exit(EXIT_FAILURE);
+			if (execve(args[0], args, NULL) == -1)
+			{
+				perror("execve");
+				exit(EXIT_FAILURE);
+			}
 		}
-            // Relative or command in PATH
+			// Relative or command in PATH
+			char *path = getenv("PATH");
+			char *dir = strtok(path, ":");
+			char cmd[512];
 
-            char *path = getenv("PATH");
-            char *dir = strtok(path, ":");
-            char cmd[512];
+			while (dir != NULL)
+			{
+				snprintf(cmd, sizeof(cmd), "%s/%s", dir, args[0]);
+				if (access(cmd, X_OK) == 0)
+				{
+					if (execve(cmd, args, NULL) == -1)
+					{
+						perror("execve");
+						exit(EXIT_FAILURE);
+					}
+				}
 
-            while (dir != NULL) {
-                snprintf(cmd, sizeof(cmd), "%s/%s", dir, args[0]);
+				dir = strtok(NULL, ":");
+			}
 
-                if (access(cmd, X_OK) == 0) {
-                    if (execve(cmd, args, NULL) == -1) {
-                        perror("execve");
-                        exit(EXIT_FAILURE);
-                    }
-                }
+			fprintf(stderr, "%s: command not found\n", args[0]);
+			exit(EXIT_FAILURE);
 
-                dir = strtok(NULL, ":");
-            }
+	}
+	else
+	{
+		// Parent process
 
-            fprintf(stderr, "%s: command not found\n", args[0]);
-            exit(EXIT_FAILURE);
-        
-    } else {
-        // Parent process
-
-        do {
-            waitpid(pid, &status, WUNTRACED);
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-    }
+		do {
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
 }
 
 /**
@@ -174,7 +200,7 @@ void change_directory(char **args)
 {
 	if (args[1] == NULL)
 	{
-		if(chdir(getenv("HOME")) != 0)
+		if (chdir(getenv("HOME")) != 0)
 		{
 			perror("cd");
 		}
@@ -188,6 +214,12 @@ void change_directory(char **args)
 	}
 }
 
+/**
+ * exit_shell - exit shell
+ * @args: parsed user input
+ * Return: exit with custom exit code 0 per deualt or 2 on error
+*/
+
 int exit_shell(char **args)
 {
 	int EXIT_CODE;
@@ -199,7 +231,7 @@ int exit_shell(char **args)
 		exit(2);
 	}
 	if (!args[1])
-		exit (0);
+		exit(0);
 	EXIT_CODE = strtol(args[1], &checker, 10);
 	if (EXIT_CODE < 0)
 		EXIT_CODE += 256;
@@ -213,49 +245,76 @@ int exit_shell(char **args)
 
 }
 
+/**
+ * run_shell - main loop of the shell
+*/
+
 void run_shell(void)
 {
-    char *input;
-    char **args;
+	char *input;
+	char **args;
 
-    do {
-        print_prompt();
-        input = read_input();
-	if (strcmp(input, "EOF") == 0)
-		return;
-        args = parse_input(input);
+	do {
+		print_prompt();
+		input = read_input();
+		if (strcmp(input, "EOF") == 0)
+			return;
 
-        if (args[0] != NULL) {
-            if (strcmp(args[0], "cd") == 0) {
-                change_directory(args);
-            } else if (strcmp(args[0], "exit") == 0) {
-                exit_shell(args);
-            } else if (strcmp(args[0], "env") == 0) {
-                print_env();
-            } else if (strcmp(args[0], "setenv") == 0) {
-                set_env(args);
-            } else if (strcmp(args[0], "unsetenv") == 0) {
-                unset_env(args);
-            } else if (strcmp(args[0], "clear") == 0){
-	    	clear_terminal();
-	    }
-	    else {
-                execute_command(args);
-            }
-        }
+		args = parse_input(input);
 
-        free(input);
-        free(args);
-    } while (1);
+		if (args[0] != NULL)
+		{
+			if (strcmp(args[0], "cd") == 0)
+			{
+				change_directory(args);
+			}
+			else if (strcmp(args[0], "exit") == 0)
+			{
+				exit_shell(args);
+			}
+			else if (strcmp(args[0], "env") == 0)
+			{
+				print_env();
+			}
+			else if (strcmp(args[0], "setenv") == 0)
+			{
+				set_env(args);
+			}
+			else if (strcmp(args[0], "unsetenv") == 0)
+			{
+				unset_env(args);
+			}
+			else if (strcmp(args[0], "clear") == 0)
+			{
+				clear_terminal();
+			}
+		
+			else
+			{
+				execute_command(args);
+			}	
+		}
+
+		free(input);
+		free(args);
+	} while (1);
 }
-/* Clear the terminal. */
-void clear_terminal(void) {
-  printf("\033[H\033[2J");
+/**
+ * clear_terminal - Clear the terminal.
+*/
+void clear_terminal(void)
+{
+	printf("\033[H\033[2J");
 }
-int main()
+
+/**
+ * main - entry point.
+ * Return: 0
+*/
+int main(void)
 {
 	run_shell();
-	return 0;
+	return (0);
 
 }
 
