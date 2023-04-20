@@ -58,8 +58,6 @@ char *shell_read_line(void);
 char **shell_split_line(char *line);
 char *get_command(char *args);
 int shell_execute(char **args, char **env);
-int cd_shell(char* path);
-char *get_command(char *args);
-void (*get(char *command))(void);
+int cd_shell(char *path);
 
 #endif
