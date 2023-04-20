@@ -10,7 +10,7 @@ void run_shell(void);
 int exit_shell(char **args);
 int set_env(char **args);
 int unset_env(char **args);
-
+void clear_terminal(void);
 
 /**
  *
@@ -174,7 +174,10 @@ void change_directory(char **args)
 {
 	if (args[1] == NULL)
 	{
-		fprintf(stderr, "cd: expected argument to \"cd\"\n");
+		if(chdir(getenv("HOME")) != 0)
+		{
+			perror("cd");
+		}
 	}
 	else
 	{
@@ -233,7 +236,10 @@ void run_shell(void)
                 set_env(args);
             } else if (strcmp(args[0], "unsetenv") == 0) {
                 unset_env(args);
-            } else {
+            } else if (strcmp(args[0], "clear") == 0){
+	    	clear_terminal();
+	    }
+	    else {
                 execute_command(args);
             }
         }
@@ -241,6 +247,10 @@ void run_shell(void)
         free(input);
         free(args);
     } while (1);
+}
+/* Clear the terminal. */
+void clear_terminal(void) {
+  printf("\033[H\033[2J");
 }
 int main()
 {
