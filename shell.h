@@ -61,4 +61,6 @@ int shell_execute(char **args, char **env);
 int cd_shell(char *path);
 void child_process(char **args);
 void search_path(char **args);
+char *_strtok(char *str, char *delim);
+int is_delim(char c, char *str);
 #endif

@@ -56,13 +56,13 @@ char **parse_input(char *input)
 		exit(EXIT_FAILURE);
 	}
 	input = comment(input); /*chekc if its a comment. */
-		char *token = strtok(input, " \n");
+		char *token = _strtok(input, " \n");
 		int i = 0;
 
 	while (token != NULL)
 	{
 		args[i++] = token;
-		token = strtok(NULL, " \n");
+		token = _strtok(NULL, " \n");
 	}
 
 	args[i] = NULL;
