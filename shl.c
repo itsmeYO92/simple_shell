@@ -19,10 +19,10 @@ void print_prompt(void)
  */
 char *read_input(void)
 {
-	char *input = NULL;
-	size_t size = 0;
+	size_t size = MAX_INPUT_LENGTH;
+	char *input = malloc(sizeof(char) * size);
 
-	if (getline(&input, &size, stdin) == -1)
+	if (get_line(input, size) == -1)
 	{
 		if (feof(stdin))
 		{
