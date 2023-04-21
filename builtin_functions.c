@@ -109,6 +109,14 @@ int change_directory(char **args)
 			return (1);
 		}
 	}
+	else if (strcmp(args[1], "-") == 0)
+	{
+		if(chdir(getenv("OLDPWD")) != 0)
+		{
+			fprintf(stderr,"cd: OLDPWD not set\n");
+			return (1);
+		}
+	}
 	else
 	{
 		if (chdir(args[1]) != 0)
