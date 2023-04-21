@@ -3,7 +3,7 @@
 * get_line - Give the length of a line of char.
 *
 * @input: The Input.
-* @lim: Maximum that can Read.(Static)
+* @lim: Maximum that can Read.
 * Return: An integer.
 */
 
