@@ -34,7 +34,7 @@ typedef struct builtin
 extern char **environ;
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
-
+#define MAX_PATH_LENGTH 512
 
 
 /*
@@ -59,5 +59,6 @@ char **shell_split_line(char *line);
 char *get_command(char *args);
 int shell_execute(char **args, char **env);
 int cd_shell(char *path);
-
+void child_process(char **args);
+void search_path(char **args);
 #endif
