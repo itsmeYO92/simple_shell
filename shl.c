@@ -119,8 +119,9 @@ void search_path(char **args)
 /**
  * execute_command - Forks a child process and executes the command in it
  * @args: Argument list containing the command and its arguments
+ * Return: 0
  */
-void execute_command(char **args)
+int execute_command(char **args)
 {
 	pid_t pid;
 	int status;
@@ -145,6 +146,7 @@ void execute_command(char **args)
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
+	return (0);
 }
 /**
  * run_shell - main loop of the shell
@@ -165,35 +167,7 @@ void run_shell(void)
 
 		if (args[0] != NULL)
 		{
-			if (strcmp(args[0], "cd") == 0)
-			{
-				change_directory(args);
-			}
-			else if (strcmp(args[0], "exit") == 0)
-			{
-				exit_shell(args);
-			}
-			else if (strcmp(args[0], "env") == 0)
-			{
-				print_env();
-			}
-			else if (strcmp(args[0], "setenv") == 0)
-			{
-				set_env(args);
-			}
-			else if (strcmp(args[0], "unsetenv") == 0)
-			{
-				unset_env(args);
-			}
-			else if (strcmp(args[0], "clear") == 0)
-			{
-				clear_terminal();
-			}
-
-			else
-			{
-				execute_command(args);
-			}
+			execution_function(args)(args);
 		}
 
 		free(input);

@@ -3,12 +3,15 @@
 
 /**
  * print_env - set a variable in the environ
+ * @args: UNUSED
  * Return: 0 if successful
 */
 
-int print_env(void)
+int print_env(char **args)
 {
 	char **env = environ;
+
+	UNUSED(args);
 
 	while (*env)
 	{
@@ -94,14 +97,16 @@ int exit_shell(char **args)
  * change_directory - changes the current working directory
  *
  * @args: the arguments for the cd command
+ * Return: 0 if successful
  */
-void change_directory(char **args)
+int change_directory(char **args)
 {
 	if (args[1] == NULL)
 	{
 		if (chdir(getenv("HOME")) != 0)
 		{
 			perror("cd");
+			return (1);
 		}
 	}
 	else
@@ -109,7 +114,9 @@ void change_directory(char **args)
 		if (chdir(args[1]) != 0)
 		{
 			perror("chdir");
+			return (1);
 		}
 	}
+	return (0);
 }
 
