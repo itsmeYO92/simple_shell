@@ -101,6 +101,9 @@ int exit_shell(char **args)
  */
 int change_directory(char **args)
 {
+	char *OLD = getenv("OLDPWD");
+	char *PWD = getenv("PWD");
+
 	if (args[1] == NULL)
 	{
 		if (chdir(getenv("HOME")) != 0)
@@ -108,14 +111,17 @@ int change_directory(char **args)
 			perror("cd");
 			return (1);
 		}
+		setenv("OLDPWD", PWD, 1);
 	}
 	else if (strcmp(args[1], "-") == 0)
 	{
-		if (chdir(getenv("OLDPWD")) != 0)
+		if (chdir(OLD) != 0)
 		{
 			fprintf(stderr, "cd: OLDPWD not set\n");
 			return (1);
 		}
+		setenv("OLDPWD", PWD, 1);
+		printf("%s\n", OLD);
 	}
 	else
 	{
@@ -124,6 +130,7 @@ int change_directory(char **args)
 			perror("chdir");
 			return (1);
 		}
+		setenv("OLDPWD", PWD, 1);
 	}
 	return (0);
 }
