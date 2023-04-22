@@ -66,4 +66,5 @@ int is_delim(char c, char *str);
 int (*execution_function(char **args))(char **fargs);
 int get_line(char *input, int lim);
 char *replace_variables(char *command, int status);
+char *_strtok2(char *str, char *delim);
 #endif

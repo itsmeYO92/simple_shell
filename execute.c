@@ -86,17 +86,22 @@ void run_shell(void)
 {
 	char *input;
 	char **args;
+	char *token;
 
 	do {
 		print_prompt();
 		input = read_input();
-		args = parse_input(input);
-
-		if (args[0] != NULL)
+		token = _strtok2(input, ";\n");
+		while (token)
 		{
-			execution_function(args)(args);
-		}
+			args = parse_input(token);
 
+			if (args[0] != NULL)
+			{
+				execution_function(args)(args);
+			}
+			token = _strtok2(NULL, ";\n");
+		}
 		free(input);
 		free(args);
 	} while (1);

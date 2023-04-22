@@ -61,3 +61,47 @@ char *_strtok(char *str, char *delim)
 	backup = str;
 	return (token);
 }
+
+/**
+ * _strtok2 - tokenise a string with a delimeter
+ * @str: string to split
+ * @delim: delimeters
+ * Return: token or NULL
+*/
+
+char *_strtok2(char *str, char *delim)
+{
+	static char *backup;
+	char *token;
+
+	if (!str)
+		str = backup;
+	if (!str)
+		return (NULL);
+
+	while (1)
+	{
+		if (is_delim(*str, delim))
+		{
+			str++;
+			continue;
+		}
+		if (*str == '\0')
+			return (NULL);
+		break;
+	}
+
+	token = str;
+	while (*str != '\0')
+	{
+		if (is_delim(*str, delim) == 1)
+		{
+			*str = '\0';
+			backup = str + 1;
+			return (token);
+		}
+		str++;
+	}
+	backup = str;
+	return (token);
+}
