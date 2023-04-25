@@ -32,7 +32,7 @@ int set_env(char **args)
 {
 	if (!args[2] || args[3])
 	{
-		printf("Usage:\n\tsetenv VARIABLE VALUE\n");
+		write(STDOUT_FILENO, "Usage:\n\tsetenv VARIABLE VALUE\n", 33);
 		return (1);
 	}
 	if (setenv(args[1], args[2], 1) == -1)
@@ -53,7 +53,7 @@ int unset_env(char **args)
 {
 	if (!args[1] || args[2])
 	{
-		printf("Usage:\n\tunsetenv VARIABLE\n");
+		write(STDOUT_FILENO, "Usage:\n\tunsetenv VARIABLE\n", 26);
 		return (1);
 	}
 	if (unsetenv(args[1]) == -1)
@@ -113,11 +113,11 @@ int change_directory(char **args)
 		}
 		setenv("OLDPWD", PWD, 1);
 	}
-	else if (strcmp(args[1], "-") == 0)
+	else if (_strcmp(args[1], "-") == 0)
 	{
 		if (chdir(OLD) != 0)
 		{
-			fprintf(stderr, "cd: OLDPWD not set\n");
+			write(STDERR_FILENO, "cd: OLDPWD not set\n", 20);
 			return (1);
 		}
 		setenv("OLDPWD", PWD, 1);

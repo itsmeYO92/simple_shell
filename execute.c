@@ -15,8 +15,8 @@ void child_process(char **args)
 	}
 
 	search_path(args);
-
-	fprintf(stderr, "%s: command not found\n", args[0]);
+	write(STDERR_FILENO, args[0], strlen(args[0]));
+	write(STDERR_FILENO, ": command not found\n", 20);
 	exit(EXIT_FAILURE);
 }
 
@@ -28,23 +28,28 @@ void child_process(char **args)
 void search_path(char **args)
 {
 	char *path = getenv("PATH");
-	char *dir = strtok(path, ":");
-	char cmd[MAX_PATH_LENGTH];
+	char *dir = _strtok(path, ":");
+	char *cmd = malloc(sizeof(char) * MAX_PATH_LENGTH);
 
 	while (dir != NULL)
 	{
-		snprintf(cmd, sizeof(cmd), "%s/%s", dir, args[0]);
+		strcpy(cmd, dir);
+		strcat(cmd, "/");
+		strcat(cmd, args[0]);
+		strcat(cmd, "\0");
 		if (access(cmd, X_OK) == 0)
 		{
 			if (execve(cmd, args, NULL) == -1)
 			{
+				free(cmd);
 				perror("execve");
 				exit(EXIT_FAILURE);
 			}
 		}
 
-		dir = strtok(NULL, ":");
+		dir = _strtok(NULL, ":");
 	}
+	free(cmd);
 }
 
 /**
@@ -92,7 +97,6 @@ void run_shell(void)
 		if (isatty(STDIN_FILENO) == 1)
 			print_prompt();
 		input = read_input();
-		fflush(stdin);
 		token = _strtok2(input, ";\n");
 		while (token)
 		{
