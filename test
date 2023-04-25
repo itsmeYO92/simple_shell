@@ -1,5 +1,18 @@
+echo _______clear________
+clear
+echo _______ls-without-args________
 ls
+echo _______ls-with-args________
+ls ./ ../
+echo _______echo-without-args________
+echo
+echo _______echo-with-args________
 echo yaay
-ls ../ /tmp
+echo _______triple-commands________
+echo first ; echo second;echo third
+echo _______not-found-commands________
 hdsf
-echo first ; echo second
+echo _______comment________
+echo comment # echo you_should_not_see_this
+echo _______builtin________
+env

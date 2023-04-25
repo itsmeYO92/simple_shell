@@ -108,7 +108,8 @@ void run_shell(void)
 			}
 			token = _strtok2(NULL, ";\n");
 		}
-		free(input);
+		if (input)
+			free(input);
 		if (args)
 			free(args);
 	} while (1);
