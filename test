@@ -1,0 +1,5 @@
+ls
+echo yaay
+ls ../ /tmp
+hdsf
+echo first ; echo second

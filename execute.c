@@ -89,8 +89,10 @@ void run_shell(void)
 	char *token;
 
 	do {
-		print_prompt();
+		if (isatty(STDIN_FILENO) == 1)
+			print_prompt();
 		input = read_input();
+		fflush(stdin);
 		token = _strtok2(input, ";\n");
 		while (token)
 		{

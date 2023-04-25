@@ -20,7 +20,7 @@ void print_prompt(void)
 char *read_input(void)
 {
 	size_t size = MAX_INPUT_LENGTH;
-	char *input = malloc(sizeof(char) * size);
+	char *input = malloc(sizeof(char) * MAX_INPUT_LENGTH);
 
 	if (get_line(input, size) == -1)
 	{
@@ -58,8 +58,8 @@ char **parse_input(char *input)
 		exit(EXIT_FAILURE);
 	}
 	input = comment(input); /*chekc if its a comment. */
-		token = _strtok(input, " \n");
-		i = 0;
+	token = _strtok(input, " \n");
+	i = 0;
 
 	while (token != NULL)
 	{
