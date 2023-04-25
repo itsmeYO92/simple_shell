@@ -6,10 +6,7 @@
  */
 void print_prompt(void)
 {
-	char *cwd = getcwd(NULL, 0);
-
-	printf("%s$ ", cwd);
-	free(cwd);
+	write(STDOUT_FILENO, "$ ", 2);
 }
 
 /**

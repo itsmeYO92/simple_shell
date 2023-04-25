@@ -15,7 +15,7 @@ int print_env(char **args)
 
 	while (*env)
 	{
-		write(STDOUT_FILENO, *env, strlen(*env));
+		write(STDOUT_FILENO, *env, _strlen(*env));
 		write(STDOUT_FILENO, "\n", 1);
 		env++;
 	}
@@ -76,7 +76,9 @@ int exit_shell(char **args)
 
 	if (args[2])
 	{
-		printf("bash: exit: too many arguments\n");
+		char error_message[] = "bash: exit: too many arguments\n";
+
+		write(STDOUT_FILENO, error_message, _strlen(error_message));
 		exit(2);
 	}
 	if (!args[1])
@@ -121,7 +123,8 @@ int change_directory(char **args)
 			return (1);
 		}
 		setenv("OLDPWD", PWD, 1);
-		printf("%s\n", OLD);
+		write(STDOUT_FILENO, OLD, _strlen(OLD));
+		write(STDOUT_FILENO, "\n", 1);
 	}
 	else
 	{

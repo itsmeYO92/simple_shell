@@ -33,10 +33,10 @@ void search_path(char **args)
 
 	while (dir != NULL)
 	{
-		strcpy(cmd, dir);
-		strcat(cmd, "/");
-		strcat(cmd, args[0]);
-		strcat(cmd, "\0");
+		_strcpy(cmd, dir);
+		_strcat(cmd, "/");
+		_strcat(cmd, args[0]);
+		_strcat(cmd, "\0");
 		if (access(cmd, X_OK) == 0)
 		{
 			if (execve(cmd, args, NULL) == -1)

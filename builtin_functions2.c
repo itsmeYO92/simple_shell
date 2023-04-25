@@ -7,7 +7,9 @@
 */
 int clear_terminal(char **args)
 {
+	char str[] = "\033[H\033[2J";
+
 	UNUSED(args);
-	printf("\033[H\033[2J");
+	write(STDOUT_FILENO, str, _strlen(str));
 	return (0);
 }

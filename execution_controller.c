@@ -19,7 +19,7 @@ int (*execution_function(char **args))(char **fargs)
 	};
 	while (builtin[i].name)
 	{
-		if (strcmp(builtin[i].name, args[0]) == 0)
+		if (_strcmp(builtin[i].name, args[0]) == 0)
 			return (builtin[i].f);
 		i++;
 	}
