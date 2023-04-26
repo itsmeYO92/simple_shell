@@ -1,57 +1,18 @@
 #include "shell.h"
-/**
-	* child_process - Executes the command in the child process
-	* @args: Argument list containing the command and its arguments
-	*/
-void child_process(char **args)
-{
-	if (access(args[0], X_OK) == 0)
-	{
-		if (execve(args[0], args, environ) == -1)
-		{
-			perror("execve");
-			exit(EXIT_FAILURE);
-		}
-	}
 
-	search_path(args);
-	write(STDERR_FILENO, args[0], strlen(args[0]));
-	write(STDERR_FILENO, ": command not found\n", 20);
-	exit(EXIT_FAILURE);
+char *builtin_str[] = {
+    "cd",
+    "exit"
+};
+
+int (*builtin_func[]) (char **) = {
+    &change_directory,
+    &exit_shell
+};
+
+int num_builtins() {
+    return sizeof(builtin_str) / sizeof(char *);
 }
-
-/**
-	* search_path - Searches for the command in directories specified by the PATH
-	*      environment variable
-	* @args: Argument list containing the command and its arguments
-	*/
-void search_path(char **args)
-{
-	char *path = getenv("PATH");
-	char *dir = _strtok(path, ":");
-	char *cmd = malloc(sizeof(char) * MAX_PATH_LENGTH);
-
-	while (dir != NULL)
-	{
-		_strcpy(cmd, dir);
-		_strcat(cmd, "/");
-		_strcat(cmd, args[0]);
-		_strcat(cmd, "\0");
-		if (access(cmd, X_OK) == 0)
-		{
-			if (execve(cmd, args, environ) == -1)
-			{
-				free(cmd);
-				perror("execve");
-				exit(EXIT_FAILURE);
-			}
-		}
-
-		dir = _strtok(NULL, ":");
-	}
-	free(cmd);
-}
-
 /**
 	* execute_command - Forks a child process and executes the command in it
 	* @args: Argument list containing the command and its arguments
@@ -59,62 +20,126 @@ void search_path(char **args)
 	*/
 int execute_command(char **args)
 {
+	int i, status;
 	pid_t pid;
-	int status;
+	int wpid;
+	
+	UNUSED(wpid);
+	if (args[0] == NULL)
+	{
+		return (1);
+	}
+
+	for (i = 0; i < num_builtins(); i++)
+	{
+		if (strcmp(args[0], builtin_str[i]) == 0)
+		{
+			return (*builtin_func[i])(args);
+		}
+	}
 
 	pid = fork();
-
-	if (pid == -1)
+	if (pid == 0)
 	{
-		perror("fork");
+        /* Child process */
+		if (execvp(args[0], args) == -1)
+		{
+			fprintf(stderr,"%s: command not found\n", args[0]);
+		}
 		exit(EXIT_FAILURE);
 	}
-	else if (pid == 0)
+	else if (pid < 0)
 	{
-	/* Child process */
-		child_process(args);
+        /* Fork error */
+		perror("fork");
 	}
 	else
 	{
-	/* Parent process */
-		do {
-			waitpid(pid, &status, WUNTRACED);
+        /* Parent process */
+		do{
+			wpid = waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
-	return (status);
+
+	return (1);
 }
 /**
-	* run_shell - main loop of the shell
-*/
-
+ * run_shell - run the shell.
+ */
 void run_shell(void)
 {
-	char *input;
+	char *line;
 	char **args;
-	char *token;
+	int status;
+	int is_piped = 0;
 
-	do {
-		if (isatty(STDIN_FILENO) == 1)
-			print_prompt();
-		input = read_input();
-		token = _strtok2(input, ";\n");
-		while (token)
-		{
-			args = parse_input(token);
-
-			if (args[0] != NULL)
-			{
-				execution_function(args)(args);
-			}
-			else
-			{
-				continue; /* NUll command*/
-			}
-			token = _strtok2(NULL, ";\n");
-		}
-		if (input)
-			free(input);
-		if (args)
-			free(args);
-	} while (1);
+    /* Check if input is coming from a pipe */
+	if (!isatty(STDIN_FILENO))
+	{
+		is_piped = 1;
+	}
+	
+	do{
+		line = read_input(is_piped);
+		args = parse_input(line);
+		status = execute_command(args);
+		free(line);
+		free(args);
+	} while (status);
 }
+/**
+ * exit_shell - exit shell
+ * @args: parsed user input
+ * Return: exit with custom exit code 0 per deualt or 2 on error
+*/
+int exit_shell(char **args)
+{
+	int exit_status;
+
+	if (args[1] != NULL)
+	{
+		exit_status = atoi(args[1]);
+		exit(exit_status);
+	}
+	else
+	{
+		exit(EXIT_SUCCESS);
+	}
+}
+/**
+ * change_directory - changes the current working directory
+ *
+ * @args: the arguments for the cd command
+ * Return: 0 if successful
+ */
+/* Change directory */
+int change_directory(char **args)
+{
+	char *home_dir = getenv("HOME");
+	char *prev_dir = getenv("OLDPWD");
+
+	if (args[1] == NULL)
+	{
+		chdir(home_dir);
+	}
+	else if (strcmp(args[1], "-") == 0)
+	{
+		if (prev_dir == NULL)
+		{
+			fprintf(stderr, "shell: no previous directory\n");
+			return (1);
+		}
+		chdir(prev_dir);
+	}
+	else
+	{
+		if (chdir(args[1]) != 0)
+		{
+			perror("shell");
+		}
+	}
+	setenv("OLDPWD", getenv("PWD"), 1);
+	setenv("PWD", getcwd(NULL, 0), 1);
+	return (1);
+}
+

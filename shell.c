@@ -1,69 +1,74 @@
 #include "shell.h"
 
 /**
- * print_prompt - prints the shell prompt,
- *		 which is the current working directory
- */
-void print_prompt(void)
-{
-	write(STDOUT_FILENO, "$ ", 2);
-}
-
-/**
  * read_input - reads input from the user
  *
  * Return: a pointer to the input string
  */
-char *read_input(void)
+char *read_input(int is_piped)
 {
-	size_t size = MAX_INPUT_LENGTH;
-	char *input = malloc(sizeof(char) * MAX_INPUT_LENGTH);
+	char *line = NULL;
+	ssize_t len;
+	size_t bufsize = 0;
 
-	if (get_line(input, size) == -1)
+	if (!is_piped)
 	{
-		if (feof(stdin))
-		{
-			exit(EXIT_SUCCESS);  /* We recieved an EOF */
-		}
-		else
-		{
-			perror("readline");
-			exit(EXIT_FAILURE);
-		}
+		printf("$ ");
+		len = getline(&line, &bufsize, stdin);
 
 	}
-
-	return (input);
+	else
+	{
+		len = getline(&line, &bufsize, stdin);
+		if (len == -1)
+		{
+			exit(EXIT_SUCCESS);
+		}
+		if (line[len - 1] == '\n')
+		{
+			line[len - 1] = '\0';
+		}
+		/*printf("%s\n", line);*/
+	}
+	return (line);
 }
-
 /**
  * parse_input - parses the input string into arguments
  *
- * @input: the input string to parse
+ * @line: the input string to parse
  *
  * Return: a pointer to an array of arguments
  */
-char **parse_input(char *input)
+char **parse_input(char *line)
 {
-	char **args = malloc(MAX_ARGS * sizeof(char *));
+	int bufsize = BUFSIZE, position = 0;
+	char **tokens = malloc(bufsize * sizeof(char *));
 	char *token;
-	int i;
 
-	if (args == NULL)
+	if (!tokens)
 	{
-		perror("malloc");
+		fprintf(stderr, "Allocation error\n");
 		exit(EXIT_FAILURE);
 	}
-	input = comment(input); /*chekc if its a comment. */
-	token = _strtok(input, " \n");
-	i = 0;
 
+	token = strtok(line, TOKEN_DELIM);
 	while (token != NULL)
 	{
-		args[i++] = token;
-		token = _strtok(NULL, " \n");
-	}
+		tokens[position] = token;
+		position++;
+		if (position >= bufsize)
+		{
+			bufsize += BUFSIZE;
+			tokens = realloc(tokens, bufsize * sizeof(char *));
+			if (!tokens)
+			{
+				fprintf(stderr, "Allocation error\n");
+				exit(EXIT_FAILURE);
+			}
+		}
 
-	args[i] = NULL;
-	return (args);
+		token = strtok(NULL, TOKEN_DELIM);
+	}
+	tokens[position] = NULL;
+	return (tokens);
 }

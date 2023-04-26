@@ -5,27 +5,12 @@
 	* @av: arguments
 	* Return: 0
 */
-int main(int ac, char **av)
+/* Main function */
+int main(int argc, char **argv)
 {
-	char *cmd = NULL;
-	size_t len = 0;
-	int i;
-
-	UNUSED(ac);
-	if (!isatty(STDIN_FILENO))
-	{
-		if (getline(&cmd, &len, stdin) != -1)
-		{
-			for (i = 0; cmd[i] != '\n'; i++)
-				;
-			cmd[i] = '\0'; /* remove new line char. */
-			if (execvp(cmd, av) == -1 && execve(cmd, av, environ) == -1)
-			{
-				fprintf(stderr, "%s: %d: %s: not found\n", av[0], 1, cmd);
-				exit(127);
-			}
-		}
-	}
+	UNUSED(argc);
+	UNUSED(argv);
+    /* Run command loop */
 	run_shell();
-	return (0);
+	return (EXIT_SUCCESS);
 }

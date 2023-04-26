@@ -1,6 +1,5 @@
 #include "shell.h"
 
-
 /**
  * print_env - set a variable in the environ
  * @args: UNUSED
@@ -15,7 +14,7 @@ int print_env(char **args)
 
 	while (*env)
 	{
-		write(STDOUT_FILENO, *env, _strlen(*env));
+		write(STDOUT_FILENO, *env, strlen(*env));
 		write(STDOUT_FILENO, "\n", 1);
 		env++;
 	}
@@ -63,6 +62,7 @@ int unset_env(char **args)
 	}
 	return (0);
 }
+<<<<<<< HEAD
 /**
  * exit_shell - exit shell
  * @args: parsed user input
@@ -137,3 +137,5 @@ int change_directory(char **args)
 	}
 	return (0);
 }
+=======
+>>>>>>> f8ee88a (Update simple_shell more straightforward.)
