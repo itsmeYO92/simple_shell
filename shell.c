@@ -10,6 +10,7 @@ char *read_input(int is_piped)
 	ssize_t len;
 	size_t bufsize = 0;
 	char *line = NULL;
+	char *line_cpy;
 
 	if (!is_piped)
 	{
@@ -32,7 +33,7 @@ char *read_input(int is_piped)
 		/*printf("%s\n", line);*/
 	}
 
-	char *line_cpy = strdup(line);
+	line_cpy = strdup(line);
 
 	free(line);
 	return (line_cpy);
