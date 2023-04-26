@@ -68,10 +68,11 @@ int execute_command(char **args)
  */
 void run_shell(void)
 {
+	int bufsize = BUFSIZE;
 	char *line = NULL;
-	char **args;
-	int status;
+	char **args = malloc(bufsize * sizeof(char *));
 	int is_piped = 0;
+	int status;
 
     /* Check if input is coming from a pipe */
 	if (!isatty(STDIN_FILENO))
@@ -81,9 +82,10 @@ void run_shell(void)
 	
 	do{
 		line = read_input(is_piped, line);
-		args = parse_input(line);
+		args = parse_input(line, args);
 		status = execute_command(args);
 		free(line);
+		free(*args);
 		free(args);
 	} while (status);
 }

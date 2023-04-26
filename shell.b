@@ -38,10 +38,9 @@ char *read_input(int is_piped, char *line)
  *
  * Return: a pointer to an array of arguments
  */
-char **parse_input(char *line)
+char **parse_input(char *line, char **tokens)
 {
 	int bufsize = BUFSIZE, position = 0;
-	char **tokens = malloc(bufsize * sizeof(char *));
 	char *token;
 
 	if (!tokens)
