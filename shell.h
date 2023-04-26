@@ -64,11 +64,13 @@ char *get_command(char *args);
 int shell_execute(char **args, char **env);
 int cd_shell(char *path);
 void child_process(char **args);
-void search_path(char **args);
+int search_path(char **args);
 char *_strtok(char *str, char *delim);
 int is_delim(char c, char *str);
 int (*execution_function(char **args))(char **fargs);
 int get_line(char *input, int lim);
 char *replace_variables(char *command, int status);
 char *_strtok2(char *str, char *delim);
+int search_path1(char *args);
+int is_command(char *cmd);
 #endif
