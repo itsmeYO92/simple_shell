@@ -19,7 +19,7 @@ int main(int ac, char **av)
 			for (i = 0; cmd[i] != '\n'; i++)
 				;
 			cmd[i] = '\0'; /* remove new line char. */
-			if (execvp(cmd, av) == -1)
+			if (execvp(cmd, av) == -1 && execve(cmd, av, environ) == -1)
 			{
 				fprintf(stderr, "%s: %d: %s: not found\n", av[0], 1, cmd);
 				exit(127);
