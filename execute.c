@@ -7,7 +7,7 @@ void child_process(char **args)
 {
 	if (access(args[0], X_OK) == 0)
 	{
-		if (execve(args[0], args, NULL) == -1)
+		if (execve(args[0], args, environ) == -1)
 		{
 			perror("execve");
 			exit(EXIT_FAILURE);
@@ -39,7 +39,7 @@ void search_path(char **args)
 		_strcat(cmd, "\0");
 		if (access(cmd, X_OK) == 0)
 		{
-			if (execve(cmd, args, NULL) == -1)
+			if (execve(cmd, args, environ) == -1)
 			{
 				free(cmd);
 				perror("execve");

@@ -32,7 +32,7 @@ int set_env(char **args)
 {
 	if (!args[2] || args[3])
 	{
-		write(STDOUT_FILENO, "Usage:\n\tsetenv VARIABLE VALUE\n", 33);
+		write(STDOUT_FILENO, "Usage:\n\tsetenv VARIABLE VALUE\n", 31);
 		return (1);
 	}
 	if (setenv(args[1], args[2], 1) == -1)
