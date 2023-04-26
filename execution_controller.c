@@ -9,7 +9,8 @@ int (*execution_function(char **args))(char **fargs)
 {
 	int i = 0;
 	builtin_t builtin[] = {
-		{"exit", exit_shell},
+		{"quit", exit_shell},
+		{"exit", quit},
 		{"env", print_env},
 		{"setenv", set_env},
 		{"unsetenv", unset_env},

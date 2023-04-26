@@ -73,4 +73,5 @@ char *replace_variables(char *command, int status);
 char *_strtok2(char *str, char *delim);
 int search_path1(char *args);
 int is_command(char *cmd);
+int quit(char **args);
 #endif

@@ -13,3 +13,13 @@ int clear_terminal(char **args)
 	write(STDOUT_FILENO, str, _strlen(str));
 	return (0);
 }
+/**
+ * quit - exit shell.
+ * @args: UNUSED
+ * return: 0 SUCCESS.
+ **/
+int quit(char **args)
+{
+	UNUSED(args);
+	exit(0);
+}
