@@ -46,7 +46,7 @@ int execute_command(char **args)
 		{
 			fprintf(stderr,"%s: command not found\n", args[0]);
 		}
-		exit(EXIT_FAILURE);
+		exit(127);
 	}
 	else if (pid < 0)
 	{
