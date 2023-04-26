@@ -5,14 +5,16 @@
  *
  * Return: a pointer to the input string
  */
-char *read_input(int is_piped, char *line)
+char *read_input(int is_piped)
 {
 	ssize_t len;
 	size_t bufsize = 0;
+	char *line = NULL;
 
 	if (!is_piped)
 	{
 		printf("$ ");
+		fflush(stdout);
 		len = getline(&line, &bufsize, stdin);
 
 	}
@@ -29,7 +31,11 @@ char *read_input(int is_piped, char *line)
 		}
 		/*printf("%s\n", line);*/
 	}
-	return (line);
+
+	char *line_cpy = strdup(line);
+
+	free(line);
+	return (line_cpy);
 }
 /**
  * parse_input - parses the input string into arguments
@@ -60,6 +66,7 @@ char **parse_input(char *line, char **tokens)
 			tokens = realloc(tokens, bufsize * sizeof(char *));
 			if (!tokens)
 			{
+				free(token);
 				fprintf(stderr, "Allocation error\n");
 				exit(EXIT_FAILURE);
 			}
@@ -67,6 +74,7 @@ char **parse_input(char *line, char **tokens)
 
 		token = strtok(NULL, TOKEN_DELIM);
 	}
+	free(token);
 	tokens[position] = NULL;
 	return (tokens);
 }

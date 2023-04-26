@@ -3,7 +3,7 @@
 
 /* Function declarations */
 void run_shell(void);
-char *read_input(int is_piped, char *line);
+char *read_input(int is_piped);
 char **parse_input(char *line, char **tokens);
 int execute_command(char **args);
 int change_directory(char **args);

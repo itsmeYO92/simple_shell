@@ -69,8 +69,6 @@ int execute_command(char **args)
 void run_shell(void)
 {
 	int bufsize = BUFSIZE;
-	char *line = NULL;
-	char **args = malloc(bufsize * sizeof(char *));
 	int is_piped = 0;
 	int status;
 
@@ -81,12 +79,14 @@ void run_shell(void)
 	}
 	
 	do{
-		line = read_input(is_piped, line);
+		char *line = read_input(is_piped);
+		char **args = malloc(bufsize * sizeof(char *));
+
 		args = parse_input(line, args);
 		status = execute_command(args);
+		free(line);
+		free(args);
 	} while (status);
-	free(line);
-	free(args);
 }
 /**
  * exit_shell - exit shell
@@ -99,11 +99,14 @@ int exit_shell(char **args)
 
 	if (args[1] != NULL)
 	{
+		
 		exit_status = atoi(args[1]);
+		free(args);
 		exit(exit_status);
 	}
 	else
 	{
+		free(args);
 		exit(EXIT_SUCCESS);
 	}
 }

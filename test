@@ -16,3 +16,4 @@ echo _______comment________
 echo comment # echo you_should_not_see_this
 echo _______builtin________
 env
+exit
