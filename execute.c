@@ -25,7 +25,7 @@ void child_process(char **args)
 	*      environment variable
 	* @args: Argument list containing the command and its arguments
 	*/
-int search_path(char **args)
+void search_path(char **args)
 {
 	char *path = getenv("PATH");
 	char *dir = _strtok(path, ":");
@@ -50,7 +50,6 @@ int search_path(char **args)
 		dir = _strtok(NULL, ":");
 	}
 	free(cmd);
-	return (0);
 }
 
 /**
