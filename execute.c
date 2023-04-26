@@ -84,10 +84,9 @@ void run_shell(void)
 		line = read_input(is_piped, line);
 		args = parse_input(line, args);
 		status = execute_command(args);
-		free(line);
-		free(*args);
-		free(args);
 	} while (status);
+	free(line);
+	free(args);
 }
 /**
  * exit_shell - exit shell
