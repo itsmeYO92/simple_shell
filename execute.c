@@ -106,6 +106,10 @@ void run_shell(void)
 			{
 				execution_function(args)(args);
 			}
+			else
+			{
+				continue; /* NUll command*/
+			}
 			token = _strtok2(NULL, ";\n");
 		}
 		if (input)

@@ -9,6 +9,7 @@ int main(int ac, char **av)
 	size_t len = 0;
 	int i;
 
+	UNUSED(ac);
 	if (!isatty(STDIN_FILENO))
 	{
 		if (getline(&cmd, &len, stdin) != -1)
