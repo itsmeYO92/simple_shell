@@ -5,9 +5,8 @@
  *
  * Return: a pointer to the input string
  */
-char *read_input(int is_piped)
+char *read_input(int is_piped, char *line)
 {
-	char *line = NULL;
 	ssize_t len;
 	size_t bufsize = 0;
 

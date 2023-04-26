@@ -62,12 +62,11 @@ int unset_env(char **args)
 	}
 	return (0);
 }
-<<<<<<< HEAD
 /**
  * exit_shell - exit shell
  * @args: parsed user input
  * Return: exit with custom exit code 0 per deualt or 2 on error
-*/
+
 
 int exit_shell(char **args)
 {
@@ -78,7 +77,7 @@ int exit_shell(char **args)
 	{
 		char error_message[] = "bash: exit: too many arguments\n";
 
-		write(STDOUT_FILENO, error_message, _strlen(error_message));
+		write(STDOUT_FILENO, error_message, strlen(error_message));
 		exit(2);
 	}
 	if (!args[1])
@@ -94,13 +93,13 @@ int exit_shell(char **args)
 
 	exit(EXIT_CODE % 256);
 
-}
+}*/
 /**
  * change_directory - changes the current working directory
  *
  * @args: the arguments for the cd command
  * Return: 0 if successful
- */
+ 
 int change_directory(char **args)
 {
 	char *OLD = getenv("OLDPWD");
@@ -115,7 +114,7 @@ int change_directory(char **args)
 		}
 		setenv("OLDPWD", PWD, 1);
 	}
-	else if (_strcmp(args[1], "-") == 0)
+	else if (strcmp(args[1], "-") == 0)
 	{
 		if (chdir(OLD) != 0)
 		{
@@ -123,7 +122,7 @@ int change_directory(char **args)
 			return (1);
 		}
 		setenv("OLDPWD", PWD, 1);
-		write(STDOUT_FILENO, OLD, _strlen(OLD));
+		write(STDOUT_FILENO, OLD, strlen(OLD));
 		write(STDOUT_FILENO, "\n", 1);
 	}
 	else
@@ -136,6 +135,4 @@ int change_directory(char **args)
 		setenv("OLDPWD", PWD, 1);
 	}
 	return (0);
-}
-=======
->>>>>>> f8ee88a (Update simple_shell more straightforward.)
+}*/

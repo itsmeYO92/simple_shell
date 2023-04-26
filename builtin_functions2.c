@@ -10,7 +10,7 @@ int clear_terminal(char **args)
 	char str[] = "\033[H\033[2J";
 
 	UNUSED(args);
-	write(STDOUT_FILENO, str, _strlen(str));
+	write(STDOUT_FILENO, str, strlen(str));
 	return (0);
 }
 /**

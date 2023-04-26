@@ -68,7 +68,7 @@ int execute_command(char **args)
  */
 void run_shell(void)
 {
-	char *line;
+	char *line = NULL;
 	char **args;
 	int status;
 	int is_piped = 0;
@@ -80,7 +80,7 @@ void run_shell(void)
 	}
 	
 	do{
-		line = read_input(is_piped);
+		line = read_input(is_piped, line);
 		args = parse_input(line);
 		status = execute_command(args);
 		free(line);
