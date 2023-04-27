@@ -3,7 +3,8 @@
 
 /* Function declarations */
 void run_shell(void);
-char *read_input(int is_piped, char *line);
+void sigintHandler(__attribute__((unused))int sig_num);
+char *read_input(int is_piped, char *line, char **args);
 char **parse_input(char *line, char **tokens);
 int execute_command(char **args, char *line);
 int change_directory(char **args, char *line);

@@ -1,5 +1,17 @@
 #include "shell.h"
 
+/**
+ * sigintHandler - blocks ctrl-C
+ * @sig_num: the signal number
+ *
+ * Return: void
+ */
+void sigintHandler(__attribute__((unused))int sig_num)
+{
+	write(1, "\n", 1);
+	fflush(stdin);
+}
+
 char *builtin_str[] = {
     "cd",
     "exit"
@@ -81,11 +93,12 @@ void run_shell(void)
 	
 	do{
 		char **args = malloc(bufsize * sizeof(char *));
-		line = read_input(is_piped, line); 
+		line = read_input(is_piped, line, args); 
 		args = parse_input(line, args);
 		status = execute_command(args, line);
-		free(line);
+		
 		free(args);
+		free(line);
 	} while (status);
 }
 /**

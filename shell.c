@@ -5,7 +5,7 @@
  *
  * Return: a pointer to the input string
  */
-char *read_input(int is_piped, char *line)
+char *read_input(int is_piped, char *line, char **args)
 {
 	ssize_t len;
 	size_t bufsize = 0;
@@ -14,15 +14,19 @@ char *read_input(int is_piped, char *line)
 	{
 		printf("$ ");
 		fflush(stdout);
+		signal(SIGINT, sigintHandler);
 		len = getline(&line, &bufsize, stdin);
 		
 
 	}
 	else
 	{
+		signal(SIGINT, sigintHandler);
 		len = getline(&line, &bufsize, stdin);
 	if (len == -1)
 		{
+			free(args);
+			free(line);
 			exit(EXIT_SUCCESS);
 		}
 		if (line[len - 1] == '\n')
