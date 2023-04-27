@@ -92,6 +92,7 @@ void run_shell(void)
 	do{
 		char **args = malloc(bufsize * sizeof(char *));
 		line = read_input(is_piped, line, args); 
+		line = comment(line);
 		args = parse_input(line, args);
 		status = execute_command(args, line);
 		

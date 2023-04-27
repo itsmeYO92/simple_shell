@@ -14,6 +14,7 @@ int _isdigit(int c);
 int set_env(char **args, char *line);
 int unset_env(char **args, char *line);
 int print_env(char **args, char *line);
+char *comment(char *input);
 /*
  * LIBRARIES
 */
