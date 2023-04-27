@@ -96,11 +96,10 @@ void run_shell(void)
 int exit_shell(char **args, char *line)
 {
 	int exit_status;
-	int i = 0;
 
 	if (args[1] != NULL)
 	{
-		exit_status = 111; //atoi(args[1]);
+		exit_status = 111; /*atoi(args[1]);*/
 		free(line);
 		free(args);
 		exit(exit_status);
