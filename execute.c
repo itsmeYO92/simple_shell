@@ -12,19 +12,6 @@ void sigintHandler(__attribute__((unused))int sig_num)
 	fflush(stdin);
 }
 
-char *builtin_str[] = {
-    "cd",
-    "exit"
-};
-
-int (*builtin_func[]) (char **args, char *line) = {
-    &change_directory,
-    &exit_shell
-};
-
-int num_builtins() {
-    return sizeof(builtin_str) / sizeof(char *);
-}
 /**
 	* execute_command - Forks a child process and executes the command in it
 	* @args: Argument list containing the command and its arguments
@@ -32,9 +19,17 @@ int num_builtins() {
 	*/
 int execute_command(char **args, char *line)
 {
-	int i, status;
+	int i = 0, status;
 	pid_t pid;
 	int wpid;
+	builtin_t builtin[] = {
+		{"exit", exit_shell},
+		{"env", print_env},
+		{"setenv", set_env},
+		{"unsetenv", unset_env},
+		{"cd", change_directory},
+		{NULL, NULL}
+	};
 	
 	UNUSED(wpid);
 	if (args[0] == NULL)
@@ -42,23 +37,26 @@ int execute_command(char **args, char *line)
 		return (1);
 	}
 
-	for (i = 0; i < num_builtins(); i++)
+	while (builtin[i].name)
 	{
-		if (strcmp(args[0], builtin_str[i]) == 0)
+		if (strcmp(args[0], builtin[i].name) == 0)
 		{
-			return (*builtin_func[i])(args, line);
+			(builtin[i].f)(args, line);
+			return (1);
 		}
+		i++;
 	}
-
 	pid = fork();
 	if (pid == 0)
 	{
         /* Child process */
 		if (execvp(args[0], args) == -1)
 		{
-			perror(args[0]);
+			fprintf(stderr,"%s: command not found\n", args[0]);
+			free(args);
+			free(line);
 		}
-		exit(127);
+		exit(126);
 	}
 	else if (pid < 0)
 	{
@@ -101,64 +99,3 @@ void run_shell(void)
 		free(line);
 	} while (status);
 }
-/**
- * exit_shell - exit shell
- * @args: parsed user input
- * Return: exit with custom exit code 0 per deualt or 2 on error
-*/
-int exit_shell(char **args, char *line)
-{
-	int exit_status;
-
-	if (args[1] != NULL)
-	{
-		exit_status = 111; /*atoi(args[1]);*/
-		free(line);
-		free(args);
-		exit(exit_status);
-	}
-	else
-	{
-		free(args);
-		free(line);
-		exit(EXIT_SUCCESS);
-	}
-}
-/**
- * change_directory - changes the current working directory
- *
- * @args: the arguments for the cd command
- * Return: 0 if successful
- */
-/* Change directory */
-int change_directory(char **args, char *line)
-{
-	char *home_dir = getenv("HOME");
-	char *prev_dir = getenv("OLDPWD");
-
-	UNUSED(line);
-	if (args[1] == NULL)
-	{
-		chdir(home_dir);
-	}
-	else if (strcmp(args[1], "-") == 0)
-	{
-		if (prev_dir == NULL)
-		{
-			fprintf(stderr, "shell: no previous directory\n");
-			return (1);
-		}
-		chdir(prev_dir);
-	}
-	else
-	{
-		if (chdir(args[1]) != 0)
-		{
-			perror("shell");
-		}
-	}
-	setenv("OLDPWD", getenv("PWD"), 1);
-	setenv("PWD", getcwd(NULL, 0), 1);
-	return (1);
-}
-

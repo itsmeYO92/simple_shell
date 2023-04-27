@@ -6,10 +6,11 @@
  * Return: 0 if successful
 */
 
-int print_env(char **args)
+int print_env(char **args, char *line)
 {
 	char **env = environ;
 
+	UNUSED(line);
 	UNUSED(args);
 
 	while (*env)
@@ -27,8 +28,10 @@ int print_env(char **args)
  * Return: 0 if successful
 */
 
-int set_env(char **args)
+int set_env(char **args, char *line)
 {
+	UNUSED(line);
+
 	if (!args[2] || args[3])
 	{
 		write(STDOUT_FILENO, "Usage:\n\tsetenv VARIABLE VALUE\n", 31);
@@ -48,8 +51,10 @@ int set_env(char **args)
  * @args: parsed user input
  * Return: 0 if successful
 */
-int unset_env(char **args)
+int unset_env(char **args, char *line)
 {
+	UNUSED(line);
+
 	if (!args[1] || args[2])
 	{
 		write(STDOUT_FILENO, "Usage:\n\tunsetenv VARIABLE\n", 26);
@@ -66,9 +71,9 @@ int unset_env(char **args)
  * exit_shell - exit shell
  * @args: parsed user input
  * Return: exit with custom exit code 0 per deualt or 2 on error
+**/
 
-
-int exit_shell(char **args)
+int exit_shell(char **args, char *line)
 {
 	int EXIT_CODE;
 	char *checker;
@@ -78,33 +83,42 @@ int exit_shell(char **args)
 		char error_message[] = "bash: exit: too many arguments\n";
 
 		write(STDOUT_FILENO, error_message, strlen(error_message));
+		free(args);
+		free(line);
 		exit(2);
 	}
-	if (!args[1])
+	if (args[1] == NULL)
+	{
+		free(args);
+		free(line);
 		exit(0);
+	}
 	EXIT_CODE = strtol(args[1], &checker, 10);
 	if (EXIT_CODE < 0)
 		EXIT_CODE += 256;
 	if (*checker != '\0')
 	{
 		printf("bash: exit: %s: numeric argument required\n", args[1]);
+		free(args);
+		free(line);
 		exit(2);
 	}
-
+	free(args);
+	free(line);
 	exit(EXIT_CODE % 256);
-
-}*/
+}
 /**
  * change_directory - changes the current working directory
  *
  * @args: the arguments for the cd command
  * Return: 0 if successful
- 
-int change_directory(char **args)
+ **/
+int change_directory(char **args, char *line)
 {
 	char *OLD = getenv("OLDPWD");
 	char *PWD = getenv("PWD");
 
+	UNUSED(line);
 	if (args[1] == NULL)
 	{
 		if (chdir(getenv("HOME")) != 0)
@@ -135,4 +149,4 @@ int change_directory(char **args)
 		setenv("OLDPWD", PWD, 1);
 	}
 	return (0);
-}*/
+}

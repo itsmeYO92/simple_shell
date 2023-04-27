@@ -34,7 +34,7 @@ char *read_input(int is_piped, char *line, char **args)
 			line[len - 1] = '\0';
 		}
 	}
-
+	/*printf("%s\n", line);*/
 
 	return (line);
 }
@@ -77,5 +77,6 @@ char **parse_input(char *line, char **tokens)
 	}
 	free(token);
 	tokens[position] = NULL;
+/*	printf("%s :arg[0] and %s: arg[1]\n", tokens[0], tokens[1]);*/
 	return (tokens);
 }

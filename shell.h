@@ -11,6 +11,9 @@ int change_directory(char **args, char *line);
 int exit_shell(char **args, char *line);
 int num_builtins(void);
 int _isdigit(int c);
+int set_env(char **args, char *line);
+int unset_env(char **args, char *line);
+int print_env(char **args, char *line);
 /*
  * LIBRARIES
 */
@@ -22,6 +25,7 @@ int _isdigit(int c);
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 /*
  * MACROS
 */
@@ -30,4 +34,15 @@ extern char **environ;
 #define UNUSED(x) (void)(x)
 #define BUFSIZE 1024
 #define TOKEN_DELIM " \t\r\n\a"
+/**
+ * struct builtin - Struct format
+ *
+ * @name: name of the builin
+ * @f: The function associated
+ */
+typedef struct builtin
+{
+        char *name;
+        int (*f)(char **args, char *line);
+} builtin_t;
 #endif
