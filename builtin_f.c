@@ -78,15 +78,15 @@ int exit_shell(char **args, char *line)
 	int EXIT_CODE;
 	char *checker;
 
-	if (args[2])
+	/*if (args[2])
 	{
 		char error_message[] = "bash: exit: too many arguments\n";
 
 		write(STDOUT_FILENO, error_message, strlen(error_message));
 		free(args);
 		free(line);
-		exit(2);
-	}
+		return (2);
+	}*/
 	if (args[1] == NULL)
 	{
 		free(args);
