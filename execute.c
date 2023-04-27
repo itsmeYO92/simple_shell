@@ -5,7 +5,7 @@ char *builtin_str[] = {
     "exit"
 };
 
-int (*builtin_func[]) (char **) = {
+int (*builtin_func[]) (char **args, char *line) = {
     &change_directory,
     &exit_shell
 };
@@ -18,7 +18,7 @@ int num_builtins() {
 	* @args: Argument list containing the command and its arguments
 	* Return: 0
 	*/
-int execute_command(char **args)
+int execute_command(char **args, char *line)
 {
 	int i, status;
 	pid_t pid;
@@ -34,7 +34,7 @@ int execute_command(char **args)
 	{
 		if (strcmp(args[0], builtin_str[i]) == 0)
 		{
-			return (*builtin_func[i])(args);
+			return (*builtin_func[i])(args, line);
 		}
 	}
 
@@ -44,7 +44,7 @@ int execute_command(char **args)
         /* Child process */
 		if (execvp(args[0], args) == -1)
 		{
-			fprintf(stderr,"%s: command not found\n", args[0]);
+			perror(args[0]);
 		}
 		exit(127);
 	}
@@ -71,6 +71,7 @@ void run_shell(void)
 	int bufsize = BUFSIZE;
 	int is_piped = 0;
 	int status;
+	char *line = NULL;
 
     /* Check if input is coming from a pipe */
 	if (!isatty(STDIN_FILENO))
@@ -79,11 +80,10 @@ void run_shell(void)
 	}
 	
 	do{
-		char *line = read_input(is_piped);
 		char **args = malloc(bufsize * sizeof(char *));
-
+		line = read_input(is_piped, line); 
 		args = parse_input(line, args);
-		status = execute_command(args);
+		status = execute_command(args, line);
 		free(line);
 		free(args);
 	} while (status);
@@ -93,20 +93,22 @@ void run_shell(void)
  * @args: parsed user input
  * Return: exit with custom exit code 0 per deualt or 2 on error
 */
-int exit_shell(char **args)
+int exit_shell(char **args, char *line)
 {
 	int exit_status;
+	int i = 0;
 
 	if (args[1] != NULL)
 	{
-		
-		exit_status = atoi(args[1]);
+		exit_status = 111; //atoi(args[1]);
+		free(line);
 		free(args);
 		exit(exit_status);
 	}
 	else
 	{
 		free(args);
+		free(line);
 		exit(EXIT_SUCCESS);
 	}
 }
@@ -117,11 +119,12 @@ int exit_shell(char **args)
  * Return: 0 if successful
  */
 /* Change directory */
-int change_directory(char **args)
+int change_directory(char **args, char *line)
 {
 	char *home_dir = getenv("HOME");
 	char *prev_dir = getenv("OLDPWD");
 
+	UNUSED(line);
 	if (args[1] == NULL)
 	{
 		chdir(home_dir);

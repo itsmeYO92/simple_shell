@@ -5,24 +5,23 @@
  *
  * Return: a pointer to the input string
  */
-char *read_input(int is_piped)
+char *read_input(int is_piped, char *line)
 {
 	ssize_t len;
 	size_t bufsize = 0;
-	char *line = NULL;
-	char *line_cpy;
 
 	if (!is_piped)
 	{
 		printf("$ ");
 		fflush(stdout);
 		len = getline(&line, &bufsize, stdin);
+		
 
 	}
 	else
 	{
 		len = getline(&line, &bufsize, stdin);
-		if (len == -1)
+	if (len == -1)
 		{
 			exit(EXIT_SUCCESS);
 		}
@@ -30,13 +29,10 @@ char *read_input(int is_piped)
 		{
 			line[len - 1] = '\0';
 		}
-		/*printf("%s\n", line);*/
 	}
 
-	line_cpy = strdup(line);
 
-	free(line);
-	return (line_cpy);
+	return (line);
 }
 /**
  * parse_input - parses the input string into arguments
@@ -52,7 +48,7 @@ char **parse_input(char *line, char **tokens)
 
 	if (!tokens)
 	{
-		fprintf(stderr, "Allocation error\n");
+		perror("Allocation error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -68,7 +64,7 @@ char **parse_input(char *line, char **tokens)
 			if (!tokens)
 			{
 				free(token);
-				fprintf(stderr, "Allocation error\n");
+				perror("Allocation error\n");
 				exit(EXIT_FAILURE);
 			}
 		}

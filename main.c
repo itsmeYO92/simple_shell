@@ -6,10 +6,10 @@
 	* Return: 0
 */
 /* Main function */
-int main(int argc, char **argv)
+int main(int ac, char **av)
 {
-	UNUSED(argc);
-	UNUSED(argv);
+	UNUSED(ac);
+	UNUSED(av);
     /* Run command loop */
 	run_shell();
 	return (EXIT_SUCCESS);
