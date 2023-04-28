@@ -90,10 +90,10 @@ int exit_shell(char **args, char *line)
 	}
 	EXIT_CODE = strtol(args[1], &checker, 10);
 	if (EXIT_CODE < 0)
-		EXIT_CODE += 256;
+		EXIT_CODE = 2;
 	if (*checker != '\0')
 	{
-		printf("bash: exit: %s: numeric argument required\n", args[1]);
+		printf("%s", args[1]);
 		free(args);
 		free(line);
 		exit(2);

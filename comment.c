@@ -14,7 +14,8 @@ char *comment(char *input)
 	{
 		if (input[0] == '#')
 			input[i] = '\0';
-		else if (input[i] == '#' && input[i - 1] == ' ')
+		else if ((input[i] == '#' && input[i - 1] == ' ')
+				|| (input[i] == '|' && input[i]))
 			input[i] = '\0';
 		else
 			input[i] = input[i];
