@@ -57,7 +57,7 @@ int execute_command(char **args, char *line)
 	else if (pid < 0)
 		perror("fork");
 	else
-		wait(NULL);
+		wait(&status);
 	return (1);
 }
 /**
