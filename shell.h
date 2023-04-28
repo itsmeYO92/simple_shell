@@ -43,7 +43,7 @@ extern char **environ;
  */
 typedef struct builtin
 {
-        char *name;
-        int (*f)(char **args, char *line);
+	char *name;
+	int (*f)(char **args, char *line);
 } builtin_t;
 #endif

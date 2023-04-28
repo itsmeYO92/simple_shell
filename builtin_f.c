@@ -3,6 +3,7 @@
 /**
  * print_env - set a variable in the environ
  * @args: UNUSED
+ * @line: line to free
  * Return: 0 if successful
 */
 
@@ -25,6 +26,7 @@ int print_env(char **args, char *line)
 /**
  * set_env - set a variable in the environ
  * @args: parsed user input
+ * @line: line to free
  * Return: 0 if successful
 */
 
@@ -49,6 +51,7 @@ int set_env(char **args, char *line)
 /**
  * unset_env - unset a variable in environ
  * @args: parsed user input
+ * @line: line to free
  * Return: 0 if successful
 */
 int unset_env(char **args, char *line)
@@ -70,6 +73,7 @@ int unset_env(char **args, char *line)
 /**
  * exit_shell - exit shell
  * @args: parsed user input
+ * @line: line to free
  * Return: exit with custom exit code 0 per deualt or 2 on error
 **/
 
@@ -78,15 +82,6 @@ int exit_shell(char **args, char *line)
 	int EXIT_CODE;
 	char *checker;
 
-	/*if (args[2])
-	{
-		char error_message[] = "bash: exit: too many arguments\n";
-
-		write(STDOUT_FILENO, error_message, strlen(error_message));
-		free(args);
-		free(line);
-		return (2);
-	}*/
 	if (args[1] == NULL)
 	{
 		free(args);
@@ -109,7 +104,7 @@ int exit_shell(char **args, char *line)
 }
 /**
  * change_directory - changes the current working directory
- *
+ * @line: line to free
  * @args: the arguments for the cd command
  * Return: 0 if successful
  **/

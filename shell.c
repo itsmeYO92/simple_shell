@@ -2,7 +2,9 @@
 
 /**
  * read_input - reads input from the user
- *
+ * @is_piped: if in interactive mode
+ * @line: line
+ * @args: args
  * Return: a pointer to the input string
  */
 char *read_input(int is_piped, char *line, char **args)
@@ -16,14 +18,12 @@ char *read_input(int is_piped, char *line, char **args)
 		fflush(stdout);
 		signal(SIGINT, sigintHandler);
 		len = getline(&line, &bufsize, stdin);
-		
-
 	}
 	else
 	{
 		signal(SIGINT, sigintHandler);
 		len = getline(&line, &bufsize, stdin);
-	if (len == -1)
+		if (len == -1)
 		{
 			free(args);
 			free(line);
@@ -42,7 +42,7 @@ char *read_input(int is_piped, char *line, char **args)
  * parse_input - parses the input string into arguments
  *
  * @line: the input string to parse
- *
+ * @tokens: sstring where to store tokens
  * Return: a pointer to an array of arguments
  */
 char **parse_input(char *line, char **tokens)
